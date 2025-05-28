@@ -1,0 +1,9 @@
+<library path="husky_hardware">
+  <class name="clearpath_common/HuskyHardware"
+         type="clearpath_common::HuskyHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      The ros2_control HuskyHardware using a system hardware interface-type.
+    </description>
+  </class>
+</library>

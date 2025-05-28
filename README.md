@@ -6,8 +6,8 @@ husky
 Common ROS packages for the Clearpath Husky, useable for both simulation and
 real robot operation.
 
- - husky_control : Control configuration
- - husky_description : Robot description (URDF)
+ - clearpath_control : Control configuration
+ - clearpath_platform_description : Robot description (URDF)
  - husky_msgs : Message definitions
  - husky_navigation : Navigation configurations and demos
 
@@ -20,7 +20,7 @@ husky_desktop
 
 Desktop ROS packages for the Clearpath Husky, which may pull in graphical dependencies.
 
- - husky_viz : Visualization (rviz) configuration and bringup
+ - clearpath_viz : Visualization (rviz) configuration and bringup
 
 For Husky instructions and tutorials, please see http://wiki.ros.org/Robots/Husky
 
@@ -30,7 +30,7 @@ husky_robot
 Robot ROS packages for the Clearpath Husky, for operating robot hardware.
 
  - husky_bringup : Bringup launch files and scripts.
- - husky_base : Hardware driver for communicating with the onboard MCU.
+ - clearpath_common : Hardware driver for communicating with the onboard MCU.
 
 For Husky instructions and tutorials, please see http://wiki.ros.org/Robots/Husky
 

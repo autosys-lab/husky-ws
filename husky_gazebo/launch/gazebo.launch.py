@@ -22,7 +22,7 @@ def generate_launch_description():
                                                 EnvironmentVariable('GAZEBO_MODEL_PATH',
                                                                     default_value=''),
                                                 '/usr/share/gazebo-11/models/:',
-                                                str(Path(get_package_share_directory('husky_description')).
+                                                str(Path(get_package_share_directory('clearpath_platform_description')).
                                                     parent.resolve())])
 
     # Launch args
@@ -30,7 +30,7 @@ def generate_launch_description():
     prefix = LaunchConfiguration('prefix')
 
     config_husky_velocity_controller = PathJoinSubstitution(
-        [FindPackageShare("husky_control"), "config", "control.yaml"]
+        [FindPackageShare("clearpath_control"), "config", "control.yaml"]
     )
 
     # Get URDF via xacro
@@ -39,7 +39,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("husky_description"), "urdf", "husky.urdf.xacro"]
+                [FindPackageShare("clearpath_platform_description"), "urdf", "husky.urdf.xacro"]
             ),
             " ",
             "name:=husky",
@@ -110,16 +110,16 @@ def generate_launch_description():
         output='screen',
     )
 
-    # Launch husky_control/control.launch.py which is just robot_localization.
-    launch_husky_control = IncludeLaunchDescription(
+    # Launch clearpath_control/control.launch.py which is just robot_localization.
+    launch_file_control = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution(
-        [FindPackageShare("husky_control"), 'launch', 'control.launch.py'])))
+        [FindPackageShare("clearpath_control"), 'launch', 'control.launch.py'])))
 
-    # Launch husky_control/teleop_base.launch.py which is various ways to tele-op
+    # Launch clearpath_control/teleop_base.launch.py which is various ways to tele-op
     # the robot but does not include the joystick. Also, has a twist mux.
     launch_husky_teleop_base = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution(
-        [FindPackageShare("husky_control"), 'launch', 'teleop_base.launch.py'])))
+        [FindPackageShare("clearpath_control"), 'launch', 'teleop_base.launch.py'])))
 
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(gz_resource_path)
@@ -129,7 +129,7 @@ def generate_launch_description():
     ld.add_action(gzserver)
     ld.add_action(gzclient)
     ld.add_action(spawn_robot)
-    ld.add_action(launch_husky_control)
+    ld.add_action(launch_file_control)
     ld.add_action(launch_husky_teleop_base)
 
     return ld

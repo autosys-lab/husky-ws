@@ -67,7 +67,7 @@ def generate_launch_description():
     
     if (primary_lidar_3d_enable.perform(lc)) == 'true':
         if (primary_lidar_3d_model.perform(lc) == 'vlp16'):
-                
+            
             velodyne_pointcloud_dir = ament_index_python.packages.get_package_share_directory('velodyne_pointcloud')
 
             velodyne_pointcloud_params_file = os.path.join(velodyne_pointcloud_dir, 'config', 'VLP16-velodyne_convert_node-params.yaml')
@@ -182,17 +182,17 @@ def generate_launch_description():
         if (primary_imu_model.perform(lc) == 'microstrain'):
             launch_microstrain = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
-                    PathJoinSubstitution(
-                        [FindPackageShare("microstrain_inertial_driver"), 'launch', 'microstrain_launch.py']
-                    )
+                    PathJoinSubstitution([
+                        FindPackageShare("microstrain_inertial_driver"), 'launch', 'microstrain_launch.py'
+                    ])
                 ),
                 launch_arguments={
                     'port': primary_imu_port,
                     'baudrate': primary_imu_baud,
                     'imu_frame_id': primary_imu_mount,
-                    'configure' : 'true',
-                    'activate' : 'true',
-                    'use_enu_frame' : 'true'
+                    'configure': 'true',
+                    'activate': 'true',
+                    'use_enu_frame': 'true'
                 }.items()
             )
             ld.add_action(launch_microstrain)

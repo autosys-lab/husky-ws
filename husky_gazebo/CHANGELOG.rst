@@ -94,7 +94,7 @@ Changelog for package husky_gazebo
   $ catkin_make_isolated --install --use-ninja
   HOW VERIFIED
   $ roslaunch husky_gazebo husky_playpen.launch
-  $ roslaunch husky_viz view_robot.launch
+  $ roslaunch clearpath_viz view_robot.launch
   Verify that the LiDAR is present on the gazebo husky and works as expected.
   Change-Id: I8797d561489250417dc8fe2b49d958993ca7949c
   Signed-off-by: Wei Ren <renwei@smartconn.cc>
