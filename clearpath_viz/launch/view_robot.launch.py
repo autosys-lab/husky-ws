@@ -21,9 +21,7 @@ def generate_launch_description():
     arg_namespace = DeclareLaunchArgument('namespace', default_value='', description='Robot namespace')
     arg_rviz_config = DeclareLaunchArgument('config', default_value='robot.rviz')
     arg_use_sim_time = DeclareLaunchArgument(
-        'use_sim_time',
-        default_value='false',
-        description='Use simulation (Gazebo) clock if true'
+        'use_sim_time', default_value='false', description='Use simulation (Gazebo) clock if true'
     )
 
     group_view_model = GroupAction([

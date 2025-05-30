@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from launch import LaunchContext, LaunchDescription
 from launch.substitutions import EnvironmentVariable, PathJoinSubstitution
 from launch_ros.actions import Node
