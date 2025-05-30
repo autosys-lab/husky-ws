@@ -60,57 +60,48 @@ MOVEIT_TOPICS = [
 
 
 def launch_setup(context, *args, **kwargs):
+    # Packages
+    pkg_viz = FindPackageShare('clearpath_viz')
+
     # Launch Configurations
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
     arm_count = LaunchConfiguration('arm_count')
 
-    # Apply Namespace to Rviz Configuration
+    # Apply namespace to RViz Configuration
     context_namespace = namespace.perform(context)
 
     # RViz Configuration
-    pkg_clearpath_viz = FindPackageShare('clearpath_viz')
-    default_config = PathJoinSubstitution(
-        [pkg_clearpath_viz, 'rviz', 'moveit.rviz']
-    )
+    default_config = PathJoinSubstitution([pkg_viz, 'rviz', 'moveit.rviz'])
 
     context_rviz = default_config.perform(context)
     content_rviz = read_yaml(context_rviz)
 
-    content_rviz[
-        'Visualization Manager'][
-            'Displays'][1][
-                'Move Group Namespace'] = '/' + context_namespace
+    content_rviz['Visualization Manager']['Displays'][1]['Move Group Namespace'] = '/' + context_namespace
 
     namespaced_config = '/tmp/moveit.rviz'
     write_yaml(namespaced_config, content_rviz)
 
-    # Remappings
     remappings = [
-        # Standard
         ('/tf', 'tf'),
         ('/tf_static', 'tf_static'),
     ]
 
     # Remappings for MoveIt!
     for topic in MOVEIT_TOPICS:
-        # Standard Topics
-        remappings.append(('/%s' % topic, topic))
-        # Doubled Topics
-        remappings.append(('/%s/%s/' % (context_namespace, context_namespace) + topic, topic))
+        remappings.append(('/%s' % topic, topic))  # Standard Topics
+        remappings.append(('/%s/%s/' % (context_namespace, context_namespace) + topic, topic))  # Doubled Topics
 
     # Arm Kinematics
-    parameters = {}
-    parameters['use_sim_time'] = use_sim_time
-    parameters['robot_description_kinematics'] = {}
+    parameters = {'use_sim_time': use_sim_time, 'robot_description_kinematics': {}}
     for i in range(int(arm_count.perform(context))):
-        parameters['robot_description_kinematics'].update(
-            {'arm_%s' % i: {
+        parameters['robot_description_kinematics'].update({
+            'arm_%s' % i: {
                 'kinematics_solver': 'kdl_kinematics_plugin/KDLKinematicsPlugin',
                 'kinematics_solver_search_resolution': 0.005,
                 'kinematics_solver_timeout': 0.005,
-            }}
-        )
+            }
+        })
 
     return [
         GroupAction([
@@ -130,11 +121,7 @@ def launch_setup(context, *args, **kwargs):
 
 def generate_launch_description():
     # Launch Arguments
-    arg_namespace = DeclareLaunchArgument(
-        'namespace',
-        default_value='',
-        description='Robot namespace'
-    )
+    arg_namespace = DeclareLaunchArgument('namespace', default_value='', description='Robot namespace')
 
     arg_use_sim_time = DeclareLaunchArgument(
         'use_sim_time',
@@ -148,11 +135,9 @@ def generate_launch_description():
         description='Number of arms to add kinematics for.'
     )
 
-    ld = LaunchDescription()
-    # Args
-    ld.add_action(arg_namespace)
-    ld.add_action(arg_use_sim_time)
-    ld.add_action(arg_arm_count)
-    # Nodes
-    ld.add_action(OpaqueFunction(function=launch_setup))
-    return ld
+    return LaunchDescription([
+        arg_namespace,
+        arg_use_sim_time,
+        arg_arm_count,
+        OpaqueFunction(function=launch_setup)
+    ])

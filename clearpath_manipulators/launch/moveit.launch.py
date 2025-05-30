@@ -100,8 +100,8 @@ def generate_launch_description():
         choices=['true', 'false'],
         description='use_sim_time'
     )
-    ld = LaunchDescription()
-    ld.add_action(arg_setup_path)
-    ld.add_action(arg_use_sim_time)
-    ld.add_action(OpaqueFunction(function=launch_setup))
-    return ld
+    return LaunchDescription([
+        arg_setup_path,
+        arg_use_sim_time,
+        OpaqueFunction(function=launch_setup)
+    ])

@@ -41,27 +41,17 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    # Launch Arguments
-    arg_setup_path = DeclareLaunchArgument(
-        'setup_path',
-        default_value='/etc/clearpath/'
-    )
+    # Packages
+    pkg_pf_description = FindPackageShare('clearpath_platform_description')
+    pkg_viz = FindPackageShare('clearpath_viz')
 
-    arg_namespace = DeclareLaunchArgument(
-        'namespace',
-        default_value='',
-        description='Robot namespace'
-    )
+    # Launch Arguments
+    arg_setup_path = DeclareLaunchArgument('setup_path', default_value='/etc/clearpath/')
+    arg_namespace = DeclareLaunchArgument('namespace', default_value='', description='Robot namespace')
+    arg_rviz_config = DeclareLaunchArgument('config', default_value='model.rviz')
 
     arg_use_sim_time = DeclareLaunchArgument(
-        'use_sim_time',
-        default_value='false',
-        description='Use simulation (Gazebo) clock if true'
-    )
-
-    arg_rviz_config = DeclareLaunchArgument(
-        name='config',
-        default_value='model.rviz',
+        'use_sim_time', default_value='false', description='Use simulation (Gazebo) clock if true'
     )
 
     # Launch Configurations
@@ -70,27 +60,22 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time')
     setup_path = LaunchConfiguration('setup_path')
 
-    # Get Package Paths
-    pkg_clearpath_platform_description = FindPackageShare('clearpath_platform_description')
-    pkg_clearpath_viz = FindPackageShare('clearpath_viz')
-
-    config_rviz = PathJoinSubstitution([
-        pkg_clearpath_viz, 'rviz', rviz_config
-    ])
-
     group_view_model = GroupAction([
         PushRosNamespace(namespace),
-        Node(package='rviz2',
+        Node(
+            package='rviz2',
             executable='rviz2',
             name='rviz',
-            arguments=['-d', config_rviz],
+            arguments=['-d', PathJoinSubstitution([pkg_viz, 'rviz', rviz_config])],
             parameters=[{'use_sim_time': use_sim_time}],
             remappings=[
                 ('/tf', 'tf'),
                 ('/tf_static', 'tf_static')
             ],
-            output='screen'),
-        Node(package='joint_state_publisher_gui',
+            output='screen'
+        ),
+        Node(
+            package='joint_state_publisher_gui',
             executable='joint_state_publisher_gui',
             remappings=[
                 ("joint_states", "platform/joint_states")
@@ -98,10 +83,7 @@ def generate_launch_description():
         ),
         # Load Robot Description
         IncludeLaunchDescription(
-            PathJoinSubstitution([
-                pkg_clearpath_platform_description,
-                'launch',
-                'description.launch.py'])
+            PathJoinSubstitution([pkg_pf_description, 'launch', 'description.launch.py'])
         ),
     ])
 

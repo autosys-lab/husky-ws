@@ -1,4 +1,4 @@
-husky/twist_server_node:
+/**/twist_server_node:
   ros__parameters:
     link_name: base_link
     robot: a200

@@ -49,7 +49,6 @@ from launch_ros.actions import PushRosNamespace
 
 
 def generate_launch_description():
-
     # Packages
     pkg_clearpath_manipulators_description = FindPackageShare('clearpath_manipulators_description')
     pkg_clearpath_manipulators = FindPackageShare('clearpath_manipulators')
@@ -102,40 +101,43 @@ def generate_launch_description():
 
     # Launch files
     launch_file_manipulators_description = PathJoinSubstitution([
-      pkg_clearpath_manipulators_description,
-      'launch',
-      'description.launch.py'])
+        pkg_clearpath_manipulators_description,
+        'launch',
+        'description.launch.py'
+    ])
 
     launch_file_control = PathJoinSubstitution([
-      pkg_clearpath_manipulators,
-      'launch',
-      'control.launch.py'])
+        pkg_clearpath_manipulators,
+        'launch',
+        'control.launch.py'
+    ])
 
     launch_file_moveit = PathJoinSubstitution([
         pkg_clearpath_manipulators,
         'launch',
-        'moveit.launch.py'])
+        'moveit.launch.py'
+    ])
 
     group_manipulators_action = GroupAction(
         actions=[
             PushRosNamespace(PathJoinSubstitution([namespace, 'manipulators'])),
             IncludeLaunchDescription(
-              PythonLaunchDescriptionSource(launch_file_manipulators_description),
-              launch_arguments=[
-                  ('namespace', namespace),
-                  ('setup_path', setup_path),
-                  ('use_sim_time', use_sim_time),
-              ]
+                PythonLaunchDescriptionSource(launch_file_manipulators_description),
+                launch_arguments=[
+                    ('namespace', namespace),
+                    ('setup_path', setup_path),
+                    ('use_sim_time', use_sim_time),
+                ],
             ),
 
             # Launch clearpath_control/control.launch.py which is just robot_localization.
             IncludeLaunchDescription(
-              PythonLaunchDescriptionSource(launch_file_control),
-              launch_arguments=[
-                  ('namespace', namespace),
-                  ('setup_path', setup_path),
-                  ('use_sim_time', use_sim_time),
-              ]
+                PythonLaunchDescriptionSource(launch_file_control),
+                launch_arguments=[
+                    ('namespace', namespace),
+                    ('setup_path', setup_path),
+                    ('use_sim_time', use_sim_time),
+                ],
             ),
         ]
     )
@@ -160,13 +162,13 @@ def generate_launch_description():
         actions=[moveit_node_action]
     )
 
-    ld = LaunchDescription()
-    ld.add_action(arg_setup_path)
-    ld.add_action(arg_use_sim_time)
-    ld.add_action(arg_namespace)
-    ld.add_action(arg_launch_moveit)
-    ld.add_action(arg_control_delay)
-    ld.add_action(arg_moveit_delay)
-    ld.add_action(control_delayed)
-    ld.add_action(moveit_delayed)
-    return ld
+    return LaunchDescription([
+        arg_setup_path,
+        arg_use_sim_time,
+        arg_namespace,
+        arg_launch_moveit,
+        arg_control_delay,
+        arg_moveit_delay,
+        control_delayed,
+        moveit_delayed,
+    ])

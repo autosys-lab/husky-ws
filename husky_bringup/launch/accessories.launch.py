@@ -21,7 +21,7 @@ def generate_launch_description():
     primary_lidar_mount = EnvironmentVariable('CPR_LASER_MOUNT', default_value='front_laser')
 
     if (primary_lidar_enable.perform(lc)) == 'true':
-        if (primary_lidar_model.perform(lc) == 'ust10'):
+        if primary_lidar_model.perform(lc) == 'ust10':
             node_hokuyo = Node(
                 package='urg_node', 
                 executable='urg_node_driver', 
@@ -35,7 +35,6 @@ def generate_launch_description():
             )
             ld.add_action(node_hokuyo)
 
-
     # Secondary Lidar Environment Variables
     secondary_lidar_enable = EnvironmentVariable('CPR_LASER_SECONDARY', default_value='false')
     secondary_lidar_model = EnvironmentVariable('CPR_LASER_SECONDARY_MODEL', default_value='ust10')
@@ -44,7 +43,7 @@ def generate_launch_description():
     secondary_lidar_mount = EnvironmentVariable('CPR_LASER_SECONDARY_MOUNT', default_value='rear_laser')
 
     if (secondary_lidar_enable.perform(lc)) == 'true':
-        if (secondary_lidar_model.perform(lc) == 'ust10'):
+        if secondary_lidar_model.perform(lc) == 'ust10':
             node_hokuyo2 = Node(
                 package='urg_node',
                 executable='urg_node_driver',
@@ -66,10 +65,8 @@ def generate_launch_description():
     primary_lidar_3d_mount = EnvironmentVariable('CPR_3D_LASER_MOUNT', default_value='mid_velodyne')
     
     if (primary_lidar_3d_enable.perform(lc)) == 'true':
-        if (primary_lidar_3d_model.perform(lc) == 'vlp16'):
-            
+        if primary_lidar_3d_model.perform(lc) == 'vlp16':
             velodyne_pointcloud_dir = ament_index_python.packages.get_package_share_directory('velodyne_pointcloud')
-
             velodyne_pointcloud_params_file = os.path.join(velodyne_pointcloud_dir, 'config', 'VLP16-velodyne_convert_node-params.yaml')
 
             with open(velodyne_pointcloud_params_file, 'r') as f:
@@ -106,11 +103,8 @@ def generate_launch_description():
 
             ld.add_action(node_velodyne_driver)
             ld.add_action(node_velodyne_convert)
-        
-        elif (primary_lidar_3d_model.perform(lc) == 'vlp32c'):
-
+        elif primary_lidar_3d_model.perform(lc) == 'vlp32c':
             velodyne_pointcloud_dir = ament_index_python.packages.get_package_share_directory('velodyne_pointcloud')
-
             velodyne_pointcloud_params_file = os.path.join(velodyne_pointcloud_dir, 'config', 'VLP32C-velodyne_convert_node-params.yaml')
 
             with open(velodyne_pointcloud_params_file, 'r') as f:
@@ -148,7 +142,6 @@ def generate_launch_description():
             ld.add_action(node_velodyne_driver)
             ld.add_action(node_velodyne_convert)
 
-
     # This is disabled since nmea_navsat_driver has not been released.
     # Primary GPS Environment Variables
     # primary_gps_enable = EnvironmentVariable('CPR_GPS', default_value='false')
@@ -170,7 +163,6 @@ def generate_launch_description():
     #     )
     #     ld.add_action(node_gps)
 
-
     # Primary IMU Environment Variables
     primary_imu_enable = EnvironmentVariable('CPR_IMU', default_value='false')
     primary_imu_model = EnvironmentVariable('CPR_IMU_MODEL', default_value='microstrain')
@@ -179,7 +171,7 @@ def generate_launch_description():
     primary_imu_mount = EnvironmentVariable('CPR_IMU_MOUNT', default_value='imu_link')
 
     if (primary_imu_enable.perform(lc)) == 'true':
-        if (primary_imu_model.perform(lc) == 'microstrain'):
+        if primary_imu_model.perform(lc) == 'microstrain':
             launch_microstrain = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
                     PathJoinSubstitution([
@@ -207,12 +199,7 @@ def generate_launch_description():
                     [FindPackageShare("realsense2_camera"), 'launch', 'rs_launch.py']
                 )
             ),
-            launch_arguments={
-                'pointcloud.enable' : 'true'
-            }.items()
+            launch_arguments={'pointcloud.enable' : 'true'}.items()
         )
         ld.add_action(launch_primary_realsense)
-
-
     return ld
-

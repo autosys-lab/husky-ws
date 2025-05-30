@@ -41,6 +41,9 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
+    # Packages
+    pkg_control = FindPackageShare('clearpath_control')
+
     # Launch Configurations
     enable_ekf = LaunchConfiguration('enable_ekf')
     # setup_path = LaunchConfiguration('setup_path')
@@ -53,10 +56,7 @@ def generate_launch_description():
         choices=['true', 'false'],
         description='Enable localization via EKF node'
     )
-    arg_setup_path = DeclareLaunchArgument(
-        'setup_path',
-        default_value='/etc/clearpath/'
-    )
+    arg_setup_path = DeclareLaunchArgument('setup_path', default_value='/etc/clearpath/')
     arg_use_sim_time = DeclareLaunchArgument(
         'use_sim_time',
         choices=['true', 'false'],
@@ -64,18 +64,12 @@ def generate_launch_description():
         description='Use simulation time'
     )
 
-    # Paths
-    config_husky_ekf = PathJoinSubstitution([
-        FindPackageShare('clearpath_control'), 'config/a200/localization.yaml'
-    ])
-
-    # Localization
     node_localization = Node(
         package='robot_localization',
         executable='ekf_node',
         name='ekf_node',
         output='screen',
-        parameters=[config_husky_ekf],
+        parameters=[PathJoinSubstitution([pkg_control, 'config', 'a200', 'localization.yaml'])],
         remappings=[
             ('odometry/filtered', 'platform/odom/filtered'),
             ('/diagnostics', 'diagnostics'),

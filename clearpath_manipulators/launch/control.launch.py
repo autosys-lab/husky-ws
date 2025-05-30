@@ -51,50 +51,47 @@ def launch_setup(context, *args, **kwargs):
 
     context_control = unflatten_dict(read_yaml(config_control.perform(context)))
 
-    controllers = []
+    controllers = [
+        Node(
+            package='controller_manager',
+            executable='ros2_control_node',
+            parameters=[config_control],
+            output={
+                'stdout': 'screen',
+                'stderr': 'screen',
+            },
+            remappings=[
+                ('~/robot_description', 'robot_description'),
+                ('dynamic_joint_states', PathJoinSubstitution(['/', namespace, 'platform', 'dynamic_joint_states'])),
+                ('joint_states', PathJoinSubstitution(['/', namespace, 'platform', 'joint_states'])),
+            ],
+        ),
+        Node(
+            package='controller_manager',
+            executable='spawner',
+            arguments=[
+                'joint_state_broadcaster',
+                '--controller-manager-timeout',
+                '60',
+            ],
+            output='screen',
+        )
+    ]
 
-    # Add Controller Manager
-    controllers.append(Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        parameters=[config_control],
-        output={
-            'stdout': 'screen',
-            'stderr': 'screen',
-        },
-        remappings=[
-            ('~/robot_description', 'robot_description'),
-            ('dynamic_joint_states',
-                PathJoinSubstitution([
-                    '/', namespace, 'platform', 'dynamic_joint_states'
-                ])),
-            ('joint_states',
-                PathJoinSubstitution([
-                    '/', namespace, 'platform', 'joint_states'
-                ])),
-        ],
-    ))
-    # Add Joint State Broadcaster
-    controllers.append(Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=[
-            'joint_state_broadcaster', '--controller-manager-timeout', '60',
-        ],
-        output='screen',
-    ))
     # If Simulation, Add All Listed Controllers
     for namespace in context_control:
         for controller in context_control[namespace]:
             if ('controller' not in controller or
-                    'manager' in controller or
-                    'platform' in controller):
+                'manager' in controller or
+                'platform' in controller):
                 continue
             controllers.append(Node(
                 package='controller_manager',
                 executable='spawner',
                 arguments=[
-                    controller, '--controller-manager-timeout', '60',
+                    controller,
+                    '--controller-manager-timeout',
+                    '60',
                 ],
                 output='screen',
             ))
@@ -103,20 +100,11 @@ def launch_setup(context, *args, **kwargs):
 
 def generate_launch_description():
     # Launch Configurations
-    arg_setup_path = DeclareLaunchArgument(
-        'setup_path',
-        default_value='/etc/clearpath/'
-    )
+    arg_namespace = DeclareLaunchArgument('namespace', default_value='', description='Robot namespace')
+    arg_setup_path = DeclareLaunchArgument('setup_path', default_value='/etc/clearpath/')
 
-    arg_namespace = DeclareLaunchArgument(
-        'namespace',
-        default_value='',
-        description='Robot namespace'
-    )
-
-    ld = LaunchDescription([
+    return LaunchDescription([
         arg_namespace,
         arg_setup_path,
+        OpaqueFunction(function=launch_setup),
     ])
-    ld.add_action(OpaqueFunction(function=launch_setup))
-    return ld

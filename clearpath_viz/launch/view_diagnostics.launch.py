@@ -34,10 +34,9 @@
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration
 
 from launch_ros.actions import Node, PushRosNamespace
-from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
@@ -45,27 +44,22 @@ def generate_launch_description():
     namespace = LaunchConfiguration('namespace')
 
     # Launch Arguments
-    arg_namespace = DeclareLaunchArgument(
-        'namespace',
-        default_value='',
-        description='Robot namespace'
-    )
+    arg_namespace = DeclareLaunchArgument('namespace', default_value='', description='Robot namespace')
 
     group_view_model = GroupAction([
         PushRosNamespace(namespace),
-        Node(package='rqt_robot_monitor',
-             executable='rqt_robot_monitor',
-             remappings=[
+        Node(
+            package='rqt_robot_monitor',
+            executable='rqt_robot_monitor',
+            output='screen',
+            remappings=[
                 ('/diagnostics', 'diagnostics'),
                 ('/diagnostics_agg', 'diagnostics_agg')
-             ],
-             output='screen')
+            ],
+        )
     ])
 
-    ld = LaunchDescription()
-    # Args
-    ld.add_action(arg_namespace)
-
-    # Nodes
-    ld.add_action(group_view_model)
-    return ld
+    return LaunchDescription([
+        arg_namespace,
+        group_view_model
+    ])

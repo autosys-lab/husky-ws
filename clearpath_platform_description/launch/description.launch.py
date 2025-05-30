@@ -17,16 +17,8 @@ def generate_launch_description():
     use_platform_controllers = LaunchConfiguration('use_platform_controllers')
 
     # Launch Arguments
-    arg_setup_path = DeclareLaunchArgument(
-        'setup_path',
-        default_value='/etc/clearpath/'
-    )
-
-    arg_namespace = DeclareLaunchArgument(
-        'namespace',
-        default_value='',
-        description='Robot namespace'
-    )
+    arg_setup_path = DeclareLaunchArgument('setup_path', default_value='/etc/clearpath/')
+    arg_namespace = DeclareLaunchArgument('namespace', default_value='', description='Robot namespace')
 
     arg_use_fake_hardware = DeclareLaunchArgument(
         'use_fake_hardware',
@@ -46,18 +38,13 @@ def generate_launch_description():
         description='Use platform controllers if true'
     )
 
-    # Paths
-    robot_urdf = PathJoinSubstitution(
-        [FindPackageShare("clearpath_platform_description"), "urdf", "husky.urdf.xacro"]
-    )
-
     # Get URDF via xacro
     arg_robot_description_command = DeclareLaunchArgument(
         'robot_description_command',
         default_value=[
             PathJoinSubstitution([FindExecutable(name='xacro')]),
             ' ',
-            robot_urdf,
+            PathJoinSubstitution([FindPackageShare("clearpath_platform_description"), "urdf", "husky.urdf.xacro"]),
             ' ',
             'is_sim:=',
             use_sim_time,
@@ -86,18 +73,13 @@ def generate_launch_description():
         description='Use simulation time'
     )
 
-    robot_description_content = ParameterValue(
-        Command(robot_description_command),
-        value_type=str
-    )
-
     group_action_state_publishers = GroupAction([
         # Robot State Publisher
         Node(
             package="robot_state_publisher",
             executable="robot_state_publisher",
             parameters=[{
-                "robot_description": robot_description_content,
+                "robot_description": ParameterValue(Command(robot_description_command), value_type=str),
                 "use_sim_time": use_sim_time,
             }],
             remappings=[

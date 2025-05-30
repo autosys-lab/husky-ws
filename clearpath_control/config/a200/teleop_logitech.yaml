@@ -41,7 +41,7 @@
 # D-pad Horiz.     6
 # D-pad Vert.      7
 
-husky/teleop_twist_joy_node:
+/**/teleop_twist_joy_node:
   ros__parameters:
     use_sim_time: False
     axis_linear.x: 1

@@ -9,45 +9,37 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
+    # Packages
+    pkg_viz = FindPackageShare('clearpath_viz')
+
     # Launch Configurations
     namespace = LaunchConfiguration('namespace')
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    config = LaunchConfiguration('config')
 
     # Launch Arguments
-    arg_namespace = DeclareLaunchArgument(
-        'namespace',
-        default_value='',
-        description='Robot namespace'
-    )
-
+    arg_namespace = DeclareLaunchArgument('namespace', default_value='', description='Robot namespace')
+    arg_rviz_config = DeclareLaunchArgument('config', default_value='robot.rviz')
     arg_use_sim_time = DeclareLaunchArgument(
         'use_sim_time',
         default_value='false',
         description='Use simulation (Gazebo) clock if true'
     )
 
-    arg_rviz_config = DeclareLaunchArgument(
-        name='config',
-        default_value='robot.rviz'
-    )
-
-    pkg_clearpath_viz = FindPackageShare('clearpath_viz')
-
-    config_rviz = PathJoinSubstitution([
-        pkg_clearpath_viz, 'rviz', LaunchConfiguration('config')
-    ])
-
     group_view_model = GroupAction([
         PushRosNamespace(namespace),
-        Node(package='rviz2',
+        Node(
+            package='rviz2',
             executable='rviz2',
             name='rviz',
-            arguments=['-d', config_rviz],
-            parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+            arguments=['-d', PathJoinSubstitution([pkg_viz, 'rviz', config])],
+            parameters=[{'use_sim_time': use_sim_time}],
             remappings=[
                 ('/tf', 'tf'),
                 ('/tf_static', 'tf_static')
             ],
-            output='screen')
+            output='screen'
+        )
     ])
 
     return LaunchDescription([

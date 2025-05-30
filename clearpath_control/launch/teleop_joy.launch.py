@@ -3,12 +3,16 @@ from launch.substitutions import EnvironmentVariable, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
+
 def generate_launch_description():
+    # Packages
+    pkg_control = FindPackageShare('clearpath_control')
+
     lc = LaunchContext()
     joy_type = EnvironmentVariable('CPR_JOY_TYPE', default_value='logitech')
 
     filepath_config_joy = PathJoinSubstitution([
-        FindPackageShare('clearpath_control'), 'config', 'a200', ('teleop_' + joy_type.perform(lc) + '.yaml')
+        pkg_control, 'config', 'a200', 'teleop_' + joy_type.perform(lc) + '.yaml'
     ])
 
     node_joy = Node(

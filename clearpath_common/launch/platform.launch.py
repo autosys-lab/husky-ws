@@ -38,16 +38,13 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-
     # Packages
-    pkg_clearpath_control = FindPackageShare('clearpath_control')
-    pkg_clearpath_platform_description = FindPackageShare('clearpath_platform_description')
+    pkg_control = FindPackageShare('clearpath_control')
+    pkg_pf_description = FindPackageShare('clearpath_platform_description')
+    pkg_bringup = FindPackageShare('husky_bringup')
 
     # Launch Arguments
-    arg_setup_path = DeclareLaunchArgument(
-        'setup_path',
-        default_value='/etc/clearpath/'
-    )
+    arg_setup_path = DeclareLaunchArgument('setup_path', default_value='/etc/clearpath/')
 
     arg_use_sim_time = DeclareLaunchArgument(
         'use_sim_time',
@@ -56,11 +53,7 @@ def generate_launch_description():
         description='Use simulation time'
     )
 
-    arg_namespace = DeclareLaunchArgument(
-        'namespace',
-        default_value='',
-        description='Robot namespace'
-    )
+    arg_namespace = DeclareLaunchArgument('namespace', default_value='', description='Robot namespace')
 
     arg_enable_ekf = DeclareLaunchArgument(
         'enable_ekf',
@@ -75,67 +68,43 @@ def generate_launch_description():
     namespace = LaunchConfiguration('namespace')
     enable_ekf = LaunchConfiguration('enable_ekf')
 
+    # TODO check if this is necessary (we already publish robot state in clearpath_control?)
     # Get URDF via xacro
     robot_description_content = Command([
         PathJoinSubstitution([FindExecutable(name="xacro")]),
-        " ",
-        PathJoinSubstitution([
-            pkg_clearpath_platform_description,
-            "urdf",
-            "husky.urdf.xacro"
-        ]),
-        " ",
-        "name:=husky",
-        " ",
+        ' ',
+        PathJoinSubstitution([pkg_pf_description, 'urdf', 'husky.urdf.xacro']),
+        ' ',
+        'name:=husky',
+        ' ',
         "prefix:=''",
-        " ",
-        "namespace:=",
+        ' ',
+        'namespace:=',
         namespace
     ])
 
+    # TODO check if this is necessary (we already publish robot state in clearpath_control?)
     node_robot_state_publisher = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        output="screen",
-        parameters=[
-            {"robot_description": robot_description_content}
-        ],
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[{
+            'robot_description': robot_description_content
+        }],
     )
 
     # Launch files
-    launch_file_platform_description = PathJoinSubstitution([
-      pkg_clearpath_platform_description,
-      'launch',
-      'description.launch.py'])
-
-    launch_file_control = PathJoinSubstitution([
-      pkg_clearpath_control,
-      'launch',
-      'control.launch.py'])
-
-    launch_file_localization = PathJoinSubstitution([
-      pkg_clearpath_control,
-      'launch',
-      'localization.launch.py'])
-
-    launch_file_teleop_base = PathJoinSubstitution([
-      pkg_clearpath_control,
-      'launch',
-      'teleop_base.launch.py'])
-
-    launch_file_teleop_joy = PathJoinSubstitution([
-      pkg_clearpath_control,
-      'launch',
-      'teleop_joy.launch.py'])
-    
-    launch_file_accessories = PathJoinSubstitution([
-        FindPackageShare("husky_bringup"),
-        'launch',
-        'accessories.launch.py'])
+    launch_file_platform_description = PathJoinSubstitution([pkg_pf_description, 'launch', 'description.launch.py'])
+    launch_file_control = PathJoinSubstitution([pkg_control, 'launch', 'control.launch.py'])
+    launch_file_localization = PathJoinSubstitution([pkg_control, 'launch', 'localization.launch.py'])
+    launch_file_teleop_base = PathJoinSubstitution([pkg_control, 'launch', 'teleop_base.launch.py'])
+    launch_file_teleop_joy = PathJoinSubstitution([pkg_control, 'launch', 'teleop_joy.launch.py'])
+    launch_file_accessories = PathJoinSubstitution([pkg_bringup, 'launch', 'accessories.launch.py'])
 
     group_platform_action = GroupAction([
         PushRosNamespace(namespace),
 
+        # TODO check if this is necessary (we already publish robot state in clearpath_control?)
         node_robot_state_publisher,
 
         IncludeLaunchDescription(
@@ -176,8 +145,7 @@ def generate_launch_description():
             ]
         ),
 
-        # Launch clearpath_control/teleop_joy.launch.py which is tele-operation using a
-        # physical joystick.
+        # Launch clearpath_control/teleop_joy.launch.py which is tele-operation using a physical joystick.
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(launch_file_teleop_joy),
             launch_arguments=[
