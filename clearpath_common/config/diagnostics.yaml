@@ -3,5 +3,10 @@ analyzers:
     type: diagnostic_aggregator/GenericAnalyzer
     path: Husky A200
     find_and_remove_prefix: 'clearpath_common: '
-    expected: ['clearpath_common: power_status','clearpath_common: system_status','clearpath_common: safety_status','clearpath_common: software_status']
+    expected: [
+      'clearpath_common: power_status',
+      'clearpath_common: system_status',
+      'clearpath_common: safety_status',
+      'clearpath_common: software_status'
+    ]
     timeout: 5.0
