@@ -22,7 +22,7 @@ def generate_launch_description():
 
     arg_use_fake_hardware = DeclareLaunchArgument(
         'use_fake_hardware',
-        default_value='false',
+        default_value='false', 
         description='Use fake hardware if true'
     )
 
@@ -38,13 +38,15 @@ def generate_launch_description():
         description='Use platform controllers if true'
     )
 
+    robot_urdf = PathJoinSubstitution([setup_path, 'robot.urdf.xacro'])
+
     # Get URDF via xacro
     arg_robot_description_command = DeclareLaunchArgument(
         'robot_description_command',
         default_value=[
             PathJoinSubstitution([FindExecutable(name='xacro')]),
             ' ',
-            PathJoinSubstitution([FindPackageShare("clearpath_platform_description"), "urdf", "husky.urdf.xacro"]),
+            robot_urdf,
             ' ',
             'is_sim:=',
             use_sim_time,

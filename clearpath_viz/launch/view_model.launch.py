@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, GroupAction
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, GroupAction, RegisterEventHandler
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
+from launch.event_handlers import OnProcessExit
 
 from launch_ros.actions import Node, PushRosNamespace
 from launch_ros.substitutions import FindPackageShare
@@ -53,12 +54,35 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PathJoinSubstitution([pkg_pf_description, 'launch', 'description.launch.py'])
         ),
+        # Live Updater
+        Node(
+            package='clearpath_config_live',
+            executable='clearpath_config_live',
+            parameters=[{'setup_path': setup_path}]
+        ),
     ])
+
+    # Generate Initial Description
+    node_generate_description = Node(
+        package='clearpath_generator_common',
+        executable='generate_description',
+        name='generate_description',
+        output='screen',
+        arguments=['-s', setup_path],
+    )
+
+    event_generate_description = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=node_generate_description,
+            on_exit=[group_view_model]
+        )
+    )
 
     return LaunchDescription([
         arg_setup_path,
         arg_namespace,
         arg_rviz_config,
         arg_use_sim_time,
-        group_view_model
+        node_generate_description,
+        event_generate_description
     ])

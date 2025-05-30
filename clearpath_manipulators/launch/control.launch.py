@@ -11,12 +11,10 @@ from clearpath_config.common.utils.yaml import read_yaml
 
 def launch_setup(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace')
-    # setup_path = LaunchConfiguration('setup_path')
-
-    pkg_clearpath_control = FindPackageShare('clearpath_manipulators')
+    setup_path = LaunchConfiguration('setup_path')
 
     # Controllers
-    config_control = PathJoinSubstitution([pkg_clearpath_control, 'config', 'control.yaml'])
+    config_control = PathJoinSubstitution([setup_path, 'manipulators/config/control.yaml'])
 
     context_control = unflatten_dict(read_yaml(config_control.perform(context)))
 

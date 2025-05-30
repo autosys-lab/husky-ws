@@ -1,20 +1,14 @@
 <?xml version="1.0"?>
-
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="husky">
-  <!-- robot name parameter -->
-  <!-- <xacro:arg name="name" default="" /> -->
-
   <xacro:arg name="prefix" default="" />
-  <xacro:arg name="gazebo_controllers" default="$(find clearpath_control)/config/control.yaml" />
+  <xacro:arg name="gazebo_controllers" default="$(find clearpath_control)/config/a200/control.yaml" />
 
-  <xacro:include filename="$(find clearpath_platform_description)/urdf/husky_macro.urdf.xacro" />
+  <xacro:include filename="$(find clearpath_platform_description)/urdf/a200/a200_macro.urdf.xacro" />
 
   <!-- Load husky description -->
-  <xacro:husky prefix="$(arg prefix)" />
-
+  <xacro:a200 prefix="$(arg prefix)" />
 
   <xacro:if value="$(arg is_sim)">
-
     <gazebo>
       <plugin name="$(arg prefix)gazebo_ros2_control" filename="libgazebo_ros2_control.so">
         <parameters>$(arg gazebo_controllers)</parameters>
@@ -48,10 +42,8 @@
         <update_rate>10</update_rate>
       </sensor>
     </gazebo>
-
   </xacro:if>
 
   <!-- Optional custom includes. -->
   <xacro:include filename="$(arg urdf_extras)" />
-
 </robot>
