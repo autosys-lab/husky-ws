@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-
   <xacro:arg name="laser_enabled" default="$(optenv CPR_LASER_ENABLED 0)" />
   <xacro:arg name="laser_xyz" default="$(optenv CPR_LASER_XYZ 0.2206 0.0 0.00635)" />
   <xacro:arg name="laser_rpy" default="$(optenv CPR_LASER_RPY 0.0 0.0 0.0)" />
@@ -27,8 +26,7 @@
 
   <xacro:property name="M_PI" value="3.14159"/>
 
-  <xacro:macro name="husky" params="prefix">
-
+  <xacro:macro name="a200" params="prefix">
     <!-- Base Size -->
     <xacro:property name="base_x_size" value="0.98740000" />
     <xacro:property name="base_y_size" value="0.57090000" />
@@ -42,6 +40,7 @@
     <!-- Wheel Properties -->
     <xacro:property name="wheel_length" value="0.1143" />
     <xacro:property name="wheel_radius" value="0.1651" />
+    <xacro:property name="wheel" value="" />
 
     <!-- Base link is the center of the robot's bottom plate -->
     <link name="${prefix}base_link">
@@ -107,25 +106,23 @@
       <child link="${prefix}gps_link" />
     </joint>
 
-
     <!-- Husky wheel macros -->
-    <xacro:husky_wheel wheel_prefix="${prefix}front_left">
+    <xacro:wheel wheel_prefix="${prefix}front_left">
       <origin xyz="${wheelbase/2} ${track/2} ${wheel_vertical_offset}" rpy="0 0 0" />
-    </xacro:husky_wheel>
-    <xacro:husky_wheel wheel_prefix="${prefix}front_right">
+    </xacro:wheel>
+    <xacro:wheel wheel_prefix="${prefix}front_right">
       <origin xyz="${wheelbase/2} ${-track/2} ${wheel_vertical_offset}" rpy="0 0 0" />
-    </xacro:husky_wheel>
-    <xacro:husky_wheel wheel_prefix="${prefix}rear_left">
+    </xacro:wheel>
+    <xacro:wheel wheel_prefix="${prefix}rear_left">
       <origin xyz="${-wheelbase/2} ${track/2} ${wheel_vertical_offset}" rpy="0 0 0" />
-    </xacro:husky_wheel>
-    <xacro:husky_wheel wheel_prefix="${prefix}rear_right">
+    </xacro:wheel>
+    <xacro:wheel wheel_prefix="${prefix}rear_right">
       <origin xyz="${-wheelbase/2} ${-track/2} ${wheel_vertical_offset}" rpy="0 0 0" />
-    </xacro:husky_wheel>
+    </xacro:wheel>
 
     <xacro:husky_decorate />
 
     <!-- <xacro:if value="$(arg laser_enabled)">
-
       <xacro:sick_lms1xx_mount prefix="base"/>
 
       <xacro:sick_lms1xx frame="base_laser" topic="scan" namespace="$(arg namespace)"/>
@@ -135,7 +132,6 @@
         <parent link="top_plate_link" />
         <child link="base_laser_mount" />
       </joint>
-
     </xacro:if> -->
 
     <!--
@@ -211,7 +207,5 @@
         <state_interface name="velocity"/>
       </joint>
     </ros2_control>
-
   </xacro:macro>
-
 </robot>

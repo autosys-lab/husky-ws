@@ -5,7 +5,7 @@ import xacro
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 
 from clearpath_config.clearpath_config import ClearpathConfig
@@ -15,21 +15,21 @@ def launch_setup(context, *args, **kwargs):
     # Launch Configurations
     setup_path = LaunchConfiguration('setup_path')
     use_sim_time = LaunchConfiguration('use_sim_time')
-    setup_path_context = setup_path.perform(context)
+    # setup_path_context = setup_path.perform(context)
 
-    namespace = ClearpathConfig(os.path.join(setup_path_context, 'robot.yaml')).get_namespace()
+    # namespace = ClearpathConfig(os.path.join(setup_path_context, 'robot.yaml')).get_namespace()
 
     # Robot Description
     robot_description = {
         'robot_description': xacro.process_file(
-            os.path.join(setup_path_context, 'robot.urdf.xacro')
+            '/etc/clearpath/robot.urdf.xacro'
         ).toxml()
     }
 
     # Semantic Robot Description
     robot_description_semantic = {
         'robot_description_semantic': xacro.process_file(
-            os.path.join(setup_path_context, 'robot.srdf')
+            '/etc/clearpath/robot.srdf'
         ).toxml()
     }
 
@@ -38,9 +38,9 @@ def launch_setup(context, *args, **kwargs):
             package='moveit_ros_move_group',
             executable='move_group',
             output='log',
-            namespace=namespace,
+            namespace='husky',
             parameters=[
-                os.path.join(setup_path_context, 'manipulators', 'config', 'moveit.yaml'),
+                '/etc/clearpath/manipulators/config/moveit.yaml',
                 robot_description,
                 robot_description_semantic,
                 {'use_sim_time': use_sim_time},
