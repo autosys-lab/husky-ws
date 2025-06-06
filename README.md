@@ -1,7 +1,10 @@
-husky
+Husky
 =====
 
-:warning: **For ROS 2 Humble, this repository is no longer used.  Please visit [clearpath_common](https://github.com/clearpathrobotics/clearpath_common).  Check the [documentation](https://docs.clearpathrobotics.com/docs/ros/) for more details including supported sensors.**
+This repository contains the ROS packages for the Clearpath Husky robot.
+It is based on the [clearpath_common](https://github.com/clearpathrobotics/clearpath_common) repository, which contains the common ROS packages for all Clearpath robots.
+
+For further information on the Husky, please see the [Husky documentation](https://docs.clearpathrobotics.com/docs/ros/).
 
 Common ROS packages for the Clearpath Husky, useable for both simulation and
 real robot operation.
@@ -11,11 +14,7 @@ real robot operation.
  - husky_msgs : Message definitions
  - husky_navigation : Navigation configurations and demos
 
-For Husky instructions and tutorials, please see [Robots/Husky](http://wiki.ros.org/Robots/Husky).
-
-To create a custom Husky description or simulation, please fork [husky_customization](https://github.com/husky/husky_customization).
-
-husky_desktop
+clearpath_desktop
 =============
 
 Desktop ROS packages for the Clearpath Husky, which may pull in graphical dependencies.
